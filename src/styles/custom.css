@@ -1,6 +1,26 @@
-/* Scale down the hero image globally across the site */
+
+
+/* Hero layout */
+.hero .sl-flex {
+  align-items: center;
+  gap: 2rem;
+}
+
 .hero img {
-  max-width: 280px; 
+  max-width: 280px;
   height: auto;
-  
+}
+
+/* Mobile */
+@media (max-width: 50rem) {
+  .hero .sl-flex {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+
+  h2,
+  .content h2,
+  .section-title {
+    display: inline-block;
+  }
 }
