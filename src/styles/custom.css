@@ -29,6 +29,57 @@
   margin-inline: auto;
 }
 
+/* Custom Purple Theme Overrides */
+@layer galaxy {
+  :root {
+    /* Main brand accent colors (Vibrant Purple) */
+    --sl-color-accent-low: #3c1e7076;
+    --sl-color-accent: #7c3aed7d;
+    --sl-color-accent-high: #9b81ea8a;
+
+    /* Text & Highlight colors matching the purple spectrum */
+    --sl-color-text-accent: #a78bfad7;
+    
+    /* Background gradients / focus rings if applicable */
+    --sl-color-purple-blur: rgba(124, 58, 237, 0.15);
+
+    /* FORCE BUTTON TEXT TO BE WHITE/LIGHT */
+    --sl-color-text-invert: #ffffff; /* Primary button text color */
+    --sl-color-text-inline-code: #ffffff;
+  }
+
+  /* Force table cells containing inline code, links, or text to remain bright */
+  table td, 
+  table td code,
+  table th code,
+  table td a {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    text-decoration-color: var(--sl-color-accent-high) !important;
+  }
+
+  /* Give table links a slight color shift on hover so they still feel interactive */
+  table td a:hover {
+    color: var(--sl-color-accent-high) !important;
+  }
+
+  /* Target Starlight buttons directly to guarantee readable text */
+  .hero [class*="actions"] a[class*="primary"] {
+    color: #ffffff !important;
+  }
+
+  .hero [class*="actions"] a[class*="minimal"] {
+    color: #ffffff !important;
+  }
+
+  /* Make Starlight Card component icons white */
+  .card .icon,
+  .card svg {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+  }
+}
+
 /* Mobile */
 @media (max-width: 50rem) {
   h2,
@@ -40,4 +91,8 @@
 
 .hero {
   padding-inline: 1rem;
+}
+
+a {
+  color: var(--sl-color-text-accent);
 }
