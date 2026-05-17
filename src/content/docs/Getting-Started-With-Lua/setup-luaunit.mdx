@@ -1,0 +1,129 @@
+---
+title: Setting Up LuaUnit
+description: Install and configure the traditional LuaUnit testing framework to establish your testing workflow.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+## Introduction to LuaUnit
+
+**LuaUnit** is a feature-rich, xUnit-style testing framework for Lua. It is one of the most widely used testing tools in the ecosystem, utilizing a class-based structure where tests are bundled into tables and run via an explicit runner. While it lacks BDD blocks like `describe` and `it`, its explicit syntax and robust runner make it an excellent choice for structured unit testing.
+
+Throughout this section, we will explore how to install LuaUnit and leverage its comprehensive suite of assertions.
+
+---
+
+## Installation via LuaRocks
+
+We will manage LuaUnit using **LuaRocks** to ensure it is isolated and correctly linked into your development tree.
+
+<Steps>
+
+1. **Install the package** Execute the installation command in your terminal. We pass the `--local` flag to install it directly inside your home folder:
+   
+   ```bash
+   luarocks install luaunit --local
+   ```
+
+2. **Verify the installation** Open an interactive Lua shell by executing `lua` and verify that the package is globally accessible to the runtime engine:
+   
+   ```lua
+   local lu = require('luaunit')
+   print("LuaUnit Version: " .. lu.VERSION)
+   ```
+   
+   If the shell prints the active version string, your runtime path is configured correctly. Close the prompt by executing `os.exit()`.
+
+</Steps>
+
+<Aside type="caution" title="Path Configuration Reminder">
+If the runtime engine displays a "module not found" error, ensure your local Lua path variables are fully loaded. On the `fish` shell, run:
+```bash
+set -Ux LUA_PATH (luarocks path --lr-path)
+set -Ux LUA_CPATH (luarocks path --lr-cpath)
+fish_add_path ~/.luarocks/bin
+```
+</Aside>
+
+---
+
+## Anatomy of a LuaUnit Test File
+
+LuaUnit uses a class-based testing approach. You define a plain Lua table to represent your test suite, and any function prefixed with `test` inside that table becomes an active test case.
+
+Create a file named `luaunit_setup_test.lua` and add this code:
+
+```lua
+local lu = require('luaunit')
+
+-- 1. Define the test suite table
+TestLuaUnitSetup = {}
+
+-- 2. Add test functions prefixed with "test"
+function TestLuaUnitSetup:test_basic_math()
+    local result = 5 * 5
+    lu.assertEquals(result, 25)
+end
+
+function TestLuaUnitSetup:test_string_matching()
+    local text = "Astro Starlight"
+    lu.assertStrContains(text, "Starlight")
+end
+
+-- 3. Execute the runner and bind the exit status to the OS process
+os.exit(lu.LuaUnit.run())
+```
+
+Execute this script directly with the standard Lua engine:
+
+```bash
+lua luaunit_setup_test.lua
+```
+
+The terminal will print out an xUnit summary showing the test execution statistics:
+
+```text
+..
+---------------------------------------------------------------------
+Ran 2 tests in 0.001 seconds
+OK
+```
+
+---
+
+## Core Assertions Reference
+
+LuaUnit exposes explicit, semantic functions for checking types and values. Here are the primary assertion functions you will use:
+
+| Assertion | Behavior |
+| :--- | :--- |
+| `lu.assertEquals(actual, expected)` | Asserts value or structural equality. |
+| `lu.assertNotEquals(actual, expected)` | Asserts that two values are not equal. |
+| `lu.assertNil(v)` | Asserts that a value evaluates specifically to `nil`. |
+| `lu.assertNotNil(v)` | Asserts that a value is initialized and not `nil`. |
+| `lu.assertTrue(v)` | Asserts that a value is strictly `true`. |
+| `lu.assertFalse(v)` | Asserts that a value is strictly `false`. |
+| `lu.assertStrContains(str, sub)` | Checks if a plain substring exists within a target string. |
+| `lu.assertError(func, ...)` | Asserts that executing `func` with the provided arguments throws an error. |
+
+---
+
+## Runtime Options and Output Formatters
+
+The LuaUnit engine handles configuration parameters directly via standard command-line flags appended to the script call.
+
+* **Change Output Format:** Switch the terminal layout to alternative formats like tap or JUnit XML (ideal for CI servers).
+    ```bash
+    lua luaunit_setup_test.lua --output tap
+    lua luaunit_setup_test.lua --output junit
+    ```
+* **Increase Verbosity:** Force the runner to print explicit case descriptions instead of minimal dots.
+    ```bash
+    lua luaunit_setup_test.lua --verbose
+    ```
+
+---
+
+## Next Steps
+
+With both modern and traditional unit testing architectures configured, you have everything you need to experiment with code safely. Proceed directly to [Variables and Types](/lua-fundamentals/variables-and-types/) to begin exploring the core building blocks of the language.

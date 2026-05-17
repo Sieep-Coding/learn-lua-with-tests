@@ -23,8 +23,8 @@ export default defineConfig({
           items: [
             { label: 'Install Lua', slug: 'getting-started-with-lua/install-lua' },
             { label: 'Hello, World', slug: 'getting-started-with-lua/hello-world' },
-            // { label: 'Setting Up LuaUnit', slug: 'getting-started-with-lua/setup-luaunit' },
-             { label: 'Setting Up Check Your Lua', slug: 'getting-started-with-lua/setup-check-your-lua' },
+            { label: 'Setting Up LuaUnit', slug: 'getting-started-with-lua/setup-luaunit' },
+            { label: 'Setting Up Check Your Lua', slug: 'getting-started-with-lua/setup-check-your-lua' },
           ],
         },
          {
