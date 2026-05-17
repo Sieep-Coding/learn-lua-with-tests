@@ -1,5 +1,3 @@
-
-
 /* Hero layout */
 .hero .sl-flex {
   align-items: center;
@@ -7,16 +5,39 @@
 }
 
 .hero img {
-  max-width: 280px;
+  max-width: 180px;
   height: auto;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.1;
+}
+
+.hero [class*="actions"] {
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hero [class*="actions"] a {
+  width: auto !important;
+}
+
+.hero {
+  max-width: 80rem;
+  margin-inline: auto;
 }
 
 /* Mobile */
 @media (max-width: 50rem) {
-
   h2,
   .content h2,
   .section-title {
     display: inline-block;
   }
+}
+
+.hero {
+  padding-inline: 1rem;
 }
