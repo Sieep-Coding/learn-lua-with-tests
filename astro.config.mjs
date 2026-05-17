@@ -12,7 +12,7 @@ export default defineConfig({
 			customCss: [
         './src/styles/custom.css', 
       ],
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/sieep-coding/learn-lua-with-tests' }],
 			sidebar: [
 				{
 					label: 'Getting Started',
