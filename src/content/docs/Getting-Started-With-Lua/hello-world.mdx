@@ -1,0 +1,144 @@
+---
+title: Hello, World
+description: Write your first Lua test and establish the red-green-refactor cycle that drives the rest of this guide.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+## The Goal
+
+Before learning any syntax, you'll write a test. This is the pattern you'll use for every chapter in this guide:
+
+1. Write a failing test that describes what you want.
+2. Write the minimal code to make it pass.
+3. Refactor without breaking the test.
+
+## Your First File
+
+Create a file called `hello.lua`:
+
+```lua
+local function hello()
+  return "Hello, world!"
+end
+
+return { hello = hello }
+```
+
+Now create `hello_test.lua` alongside it:
+
+```lua
+local lu = require('luaunit')
+local hello_module = require('hello')
+
+TestHello = {}
+
+function TestHello:test_returns_greeting()
+  lu.assertEquals(hello_module.hello(), "Hello, world!")
+end
+
+os.exit(lu.LuaUnit.run())
+```
+
+Run the test:
+
+```bash
+lua hello_test.lua
+```
+
+You should see:
+
+```
+.
+Ran 1 tests in 0.000 seconds, 1 success, 0 failures
+```
+
+<Aside type="tip">
+If `require('luaunit')` fails, jump to [Setting Up LuaUnit](/getting-started-with-lua/setup-luaunit/) first.
+</Aside>
+
+## The Red Step
+
+The TDD cycle starts with a **failing** test. Let's prove that by writing a test for something that doesn't exist yet.
+
+Add a new test case to `hello_test.lua`:
+
+```lua
+function TestHello:test_greets_by_name()
+  lu.assertEquals(hello_module.greet("Ada"), "Hello, Ada!")
+end
+```
+
+Run the tests again. You'll see a failure:
+
+```
+F.
+hello_test.lua:12: expected: "Hello, Ada!"
+got: nil
+Ran 2 tests in 0.000 seconds, 1 success, 1 failure
+```
+
+That red output is exactly what you want. You've described a behavior that doesn't exist yet.
+
+## The Green Step
+
+Now write the minimum code to make it pass. Update `hello.lua`:
+
+```lua
+local function hello()
+  return "Hello, world!"
+end
+
+local function greet(name)
+  return "Hello, " .. name .. "!"
+end
+
+return {
+  hello = hello,
+  greet = greet,
+}
+```
+
+Run the tests:
+
+```
+..
+Ran 2 tests in 0.000 seconds, 2 successes, 0 failures
+```
+
+## The Refactor Step
+
+Both functions share the same greeting pattern. Now that tests are green, it's safe to clean up:
+
+```lua
+local function greet(name)
+  return "Hello, " .. (name or "world") .. "!"
+end
+
+return { greet = greet }
+```
+
+Update `hello_test.lua` to use `greet` everywhere:
+
+```lua
+function TestHello:test_default_greeting()
+  lu.assertEquals(hello_module.greet(), "Hello, world!")
+end
+
+function TestHello:test_greets_by_name()
+  lu.assertEquals(hello_module.greet("Ada"), "Hello, Ada!")
+end
+```
+
+Run tests. Still green. You've completed one full TDD cycle.
+
+## What You Learned
+
+- Lua modules are just tables returned from a file.
+- `require` loads a module by filename (without `.lua`).
+- The `..` operator concatenates strings.
+- `or` provides default values since Lua has no default parameters.
+
+## Next Steps
+
+Head to [Setting Up LuaUnit](/getting-started-with-lua/setup-luaunit/) for a deeper look at the test framework, or skip straight to [Variables and Types](/lua-fundamentals/variables-and-types/) if you're already comfortable with the tooling.

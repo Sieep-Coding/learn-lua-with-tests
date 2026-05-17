@@ -1,0 +1,83 @@
+---
+title: Install Lua
+description: Get Lua 5.5 installed on your machine and verify your environment is ready for test-driven development.
+---
+
+## Official Installation
+
+The official Lua installation instructions are maintained at the [Lua 5.5 readme](https://www.lua.org/manual/5.5/readme.html).
+
+## Lua Releases and 5.5
+
+Lua releases infrequently by design — stability is a core value of the project. The 5.5 release introduced a number of [breaking changes](https://www.lua.org/manual/5.5/manual.html#8), so this guide targets **Lua 5.5** specifically.
+
+## Platform Instructions
+
+### macOS
+
+The easiest path on macOS is [Homebrew](https://brew.sh/):
+
+```bash
+brew install lua
+```
+
+Verify the install:
+
+```bash
+lua -v
+# Lua 5.5.x  Copyright (C) 1994-2025 Lua.org, PUC-Rio
+```
+
+### Linux (Debian/Ubuntu)
+
+```bash
+sudo apt update
+sudo apt install lua5.5 liblua5.5-dev
+```
+
+If your distro's package manager doesn't carry 5.5 yet, build from source:
+
+```bash
+curl -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz
+tar -xzf lua-5.5.0.tar.gz
+cd lua-5.5.0
+make all test
+sudo make install
+```
+
+### Windows
+
+Download the [prebuilt binaries from LuaBinaries](https://luabinaries.sourceforge.net/) and add the directory to your `PATH`.
+
+Alternatively, use [Scoop](https://scoop.sh/):
+
+```powershell
+scoop install lua
+```
+
+## Verify Your Installation
+
+Open a terminal and run the Lua REPL:
+
+```bash
+lua
+```
+
+You should see a prompt like:
+
+```
+Lua 5.5.0  Copyright (C) 1994-2025 Lua.org, PUC-Rio
+>
+```
+
+Type `print("hello")` and press Enter. If you see `hello` printed back, you're set. Press `Ctrl+C` or `Ctrl+D` to exit.
+
+## A Note on LuaJIT
+
+[LuaJIT](https://luajit.org/) is a popular just-in-time compiler for Lua that offers significant performance gains. It targets Lua 5.1 compatibility, so it won't run this guide's 5.5-specific examples. Stick with standard Lua 5.5 for now.
+
+We don't need its features for this guide.
+
+## Next Steps
+
+With Lua installed, head to [Hello, World](/getting-started-with-lua/hello-world/) to write your first test.
