@@ -1,0 +1,5 @@
+/* Scale down the hero image globally across the site */
+.hero img {
+  max-width: 280px; 
+  height: auto;
+}
