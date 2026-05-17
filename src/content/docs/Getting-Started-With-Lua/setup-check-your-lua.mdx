@@ -1,0 +1,133 @@
+---
+title: Setting Up Check Your Lua
+description: Install and configure the Check Your Lua (CYL) testing framework to power your test-driven learning journey.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+## The Philosophy of Check Your Lua
+
+While traditional frameworks bring a lot of overhead, **Check Your Lua** (CYL) is built on a different philosophy: it is a minimal, developer-centric testing tool designed to stay out of your way. Inspired by modern testing tools, it offers behavior-driven development (BDD) blocks like `describe` and `it`, deep table assertions, and beautiful, colored terminal outputs with zero external dependencies.
+
+Throughout this book, we will use CYL to write assertions that check our understanding of Lua concepts.
+
+---
+
+## Installation via LuaRocks
+
+The easiest way to install Check Your Lua across your entire development environment is using **LuaRocks**, the package manager for Lua.
+
+<Steps>
+
+1. **Install the package** Open your terminal and pull the latest release from the official repository. We recommend using the `--local` flag to install it directly into your user space without needing root permissions:
+   
+   ```bash
+   luarocks install checkyour --local
+   ```
+
+2. **Verify the installation** To verify that your Lua environment can find the package, open an interactive Lua prompt by typing `lua` in your terminal and run a quick check:
+   
+   ```lua
+   local cyl = require('checkyour')
+   print("CYL Version: " .. cyl.version)
+   ```
+   
+   If it prints out the version string without throwing errors, you are successfully set up! Type `os.exit()` to quit the prompt.
+
+</Steps>
+
+<Aside type="caution" title="Troubleshooting 'Module Not Found'">
+If Lua complains that it cannot find the module, your terminal environment might not be loaded with the local LuaRocks path variables yet. 
+
+If you are using the `fish` shell, fix this permanently by running:
+```bash
+set -Ux LUA_PATH (luarocks path --lr-path)
+set -Ux LUA_CPATH (luarocks path --lr-cpath)
+fish_add_path ~/.luarocks/bin
+```
+For standard `bash` or `zsh` shells, add `eval $(luarocks path)` to your shell initialization script (`.bashrc` or `.zshrc`).
+</Aside>
+
+---
+
+## Anatomy of a CYL Test File
+
+Check Your Lua wraps your code inside descriptive test blocks and provides a powerful `expect` utility. Let's see how it looks in action. 
+
+Create a file named `setup_test.lua` and add the following template:
+
+```lua
+local cyl = require('checkyour')
+local describe, it, expect = cyl.describe, cyl.it, cyl.expect
+
+describe("Check Your Lua Setup", function()
+
+  it("can assert basic math truth", function()
+    -- Equality checks work on numbers, strings, and deep tables
+    expect.equal(10 + 5, 15)
+  end)
+
+  it("can check for existence", function()
+    local config = { theme = "galaxy" }
+    expect.exist(config.theme)
+    expect.not_exist(config.fontSize)
+  end)
+
+end)
+
+-- Always conclude your test files by reporting and exiting cleanly
+cyl.report()
+cyl.exit()
+```
+
+Run this file directly with the standard Lua interpreter:
+
+```bash
+lua setup_test.lua
+```
+
+You will see an elegant, colored output summarizing your success:
+
+```text
+[PASS] Check Your Lua Setup | can assert basic math truth
+[PASS] Check Your Lua Setup | can check for existence
+[====] Check Your Lua Setup | 2 passed / 0 failed / 0.000124s
+2 passed / 0 skipped / 0 failed / 0.000124s
+```
+
+---
+
+## Core Assertions Reference
+
+As you progress through the code examples in this book, you will frequently lean on these essential matchers attached to the `expect` object:
+
+| Assertion | Behavior |
+| :--- | :--- |
+| `expect.equal(a, b)` | Asserts deep structural equality (works perfectly on nested tables). |
+| `expect.not_equal(a, b)` | Asserts that `a` and `b` structurally differ. |
+| `expect.exist(v)` | Fails if the value is `nil`. |
+| `expect.not_exist(v)` | Passes only if the value is `nil`. |
+| `expect.truthy(v)` | Passes if the value is anything except `nil` or `false`. |
+| `expect.falsy(v)` | Passes if the value is specifically `nil` or `false`. |
+| `expect.type(v, "type")` | Checks the raw type string (e.g., `"table"`, `"function"`, `"number"`). |
+
+---
+
+## Configuration via Environment Flags
+
+Check Your Lua is built to be highly adaptive, exposing configuration switches via environment variables. You can prepend these to your test execution commands to control behaviors instantly.
+
+* **Silence Verbose Output:** If you only want a clean string of minimal indicators, pass the quiet flag.
+    ```bash
+    CYL_QUIET=true lua setup_test.lua
+    ```
+* **Stop on First Failure:** Perfect for CI/CD environments or deep debugging sessions where you want to halt immediately upon hitting a roadblock.
+    ```bash
+    CYL_STOP_ON_FAIL=true lua setup_test.lua
+    ```
+
+---
+
+## Next Steps
+
+Now that your local machine has a fast, lightweight assertion engine up and running, you are fully armed to dive deep into the internals of the language. Head over to [Variables and Types](/lua-fundamentals/variables-and-types/) to learn how Lua handles and stores data.
