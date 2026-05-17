@@ -126,7 +126,7 @@ export default defineConfig({
         //   ],
         // },
         {
-          label: 'Reference',
+          label: 'Quick Reference',
           items: [{ autogenerate: { directory: 'reference' } }],
         },
       ],
