@@ -13,10 +13,6 @@
 
 /* Mobile */
 @media (max-width: 50rem) {
-  .hero .sl-flex {
-    flex-direction: column-reverse;
-    text-align: center;
-  }
 
   h2,
   .content h2,
