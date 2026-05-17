@@ -27,15 +27,15 @@ export default defineConfig({
             // { label: 'Setting Up Check Your Lua', slug: 'getting-started-with-lua/setup-check-your-lua' },
           ],
         },
-        // {
-        //   label: 'Lua Fundamentals',
-        //   items: [
-        //     { label: 'Variables and Types', slug: 'lua-fundamentals/variables-and-types' },
-        //     { label: 'Strings', slug: 'lua-fundamentals/strings' },
-        //     { label: 'Numbers and Math', slug: 'lua-fundamentals/numbers-and-math' },
-        //     { label: 'Booleans and Nil', slug: 'lua-fundamentals/booleans-and-nil' },
-        //   ],
-        // },
+         {
+           label: 'Lua Fundamentals',
+           items: [
+             { label: 'Variables and Types', slug: 'lua-fundamentals/variables-and-types' },
+             { label: 'Strings', slug: 'lua-fundamentals/strings' },
+           //  { label: 'Numbers and Math', slug: 'lua-fundamentals/numbers-and-math' },
+           //  { label: 'Booleans and Nil', slug: 'lua-fundamentals/booleans-and-nil' },
+           ],
+         },
         // {
         //   label: 'Control Flow',
         //   items: [

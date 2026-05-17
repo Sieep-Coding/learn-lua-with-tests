@@ -1,0 +1,308 @@
+---
+title: Variables and Types
+description: Learn Lua's type system and variable scoping rules through a test-driven lens.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+## What You'll Learn
+
+By the end of this chapter you'll be able to:
+
+- Declare variables with `local` and understand why it matters
+- Name all eight of Lua's types and test for them with `type()`
+- Explain why Lua has no `int` vs `float` distinction
+- Write tests that document type behavior as living specification
+
+## The Test File
+
+Create `variables_test.lua`:
+
+```lua
+local cyl = require('checkyour')
+local describe, it, expect = cyl.describe, cyl.it, cyl.expect
+
+cyl.parseargs()
+```
+
+You'll add `describe` blocks to this file as you work through the chapter.
+
+---
+
+## Lua's Eight Types
+
+Lua has exactly eight types. No more, no less.
+
+| Type       | Example                  |
+|------------|--------------------------|
+| `nil`      | `nil`                    |
+| `boolean`  | `true`, `false`          |
+| `number`   | `42`, `3.14`, `0xff`     |
+| `string`   | `"hello"`, `'world'`     |
+| `function` | `function() end`         |
+| `table`    | `{}`, `{1, 2, 3}`        |
+| `userdata` | C objects via the C API  |
+| `thread`   | coroutines               |
+
+The `type()` function always returns one of these eight strings. Write a test that pins that down:
+
+```lua
+describe("type()", function()
+  it("identifies nil", function()
+    expect.equal(type(nil), "nil")
+  end)
+
+  it("identifies booleans", function()
+    expect.equal(type(true),  "boolean")
+    expect.equal(type(false), "boolean")
+  end)
+
+  it("identifies numbers", function()
+    expect.equal(type(42),   "number")
+    expect.equal(type(3.14), "number")
+    expect.equal(type(0xff), "number")   -- hex literals are numbers too
+  end)
+
+  it("identifies strings", function()
+    expect.equal(type("hello"), "string")
+    expect.equal(type('world'), "string")
+    expect.equal(type([[multi
+line]]),        "string")
+  end)
+
+  it("identifies tables", function()
+    expect.equal(type({}),         "table")
+    expect.equal(type({1, 2, 3}),  "table")
+    expect.equal(type({a = 1}),    "table")
+  end)
+
+  it("identifies functions", function()
+    expect.equal(type(print),            "function")
+    expect.equal(type(function() end),   "function")
+  end)
+end)
+```
+
+Run the tests: `lua variables_test.lua`. All green.
+
+---
+
+## Variables and Scope
+
+### `local` vs Global
+
+Lua variables are **global by default**. That's a design decision you need to internalize immediately, because it's the source of many subtle bugs.
+
+```lua
+-- Bad: this writes to the global environment
+x = 10
+
+-- Good: this variable lives only in the current block
+local x = 10
+```
+
+Write a test that proves globals leak across scope boundaries:
+
+```lua
+describe("scope", function()
+  it("global variables persist after assignment", function()
+    -- Deliberately write a global (bad practice, but educational)
+    oops_global = "I escaped"
+    expect.equal(oops_global, "I escaped")
+    expect.equal(type(oops_global), "string")
+  end)
+
+  it("local variables are block-scoped", function()
+    local result
+    do
+      local inner = "I'm trapped"
+      result = inner
+    end
+    -- inner is out of scope here; result holds the value
+    expect.equal(result, "I'm trapped")
+    expect.equal(type(inner), "nil")   -- inner is gone
+  end)
+end)
+```
+
+<Aside type="caution">
+Always use `local`. Global state makes functions harder to test in isolation. The only acceptable globals are module-level names you intend to export.
+</Aside>
+
+### Multiple Assignment
+
+Lua supports assigning multiple variables in a single statement:
+
+```lua
+describe("multiple assignment", function()
+  it("assigns left to right", function()
+    local a, b, c = 1, 2, 3
+    expect.equal(a, 1)
+    expect.equal(b, 2)
+    expect.equal(c, 3)
+  end)
+
+  it("excess values are discarded", function()
+    local a, b = 1, 2, 3   -- 3 is silently dropped
+    expect.equal(a, 1)
+    expect.equal(b, 2)
+  end)
+
+  it("missing values become nil", function()
+    local a, b, c = 1, 2   -- c gets nil
+    expect.equal(a, 1)
+    expect.equal(b, 2)
+    expect.equal(type(c), "nil")
+  end)
+
+  it("can swap without a temp variable", function()
+    local x, y = 10, 20
+    x, y = y, x
+    expect.equal(x, 20)
+    expect.equal(y, 10)
+  end)
+end)
+```
+
+---
+
+## nil
+
+`nil` is Lua's absence-of-value. It's its own type, and it's the only value of that type.
+
+```lua
+describe("nil", function()
+  it("is the default value for undeclared locals", function()
+    local x
+    expect.equal(type(x), "nil")
+    expect.falsy(x)
+  end)
+
+  it("setting a table key to nil removes it", function()
+    local t = { a = 1, b = 2 }
+    t.b = nil
+    expect.equal(type(t.b), "nil")
+
+    -- The key is truly gone from the table
+    local count = 0
+    for _ in pairs(t) do count = count + 1 end
+    expect.equal(count, 1)
+  end)
+end)
+```
+
+---
+
+## Booleans
+
+Only `false` and `nil` are falsy in Lua. Zero and the empty string are **truthy** — unlike many other languages.
+
+```lua
+describe("truthiness", function()
+  it("false and nil are the only falsy values", function()
+    expect.falsy(false)
+    expect.falsy(nil)
+  end)
+
+  it("zero is truthy", function()
+    expect.truthy(0)          -- not falsy! this surprises C/JS developers
+  end)
+
+  it("empty string is truthy", function()
+    expect.truthy("")
+  end)
+
+  it("empty table is truthy", function()
+    expect.truthy({})
+  end)
+end)
+```
+
+<Aside type="tip">
+This truthiness model is one of Lua's most common gotchas for developers coming from C, JavaScript, or Python. Your tests are the best way to document it for future readers of your code.
+</Aside>
+
+---
+
+## Numbers
+
+Lua 5.3+ uses a split number type internally: integers and floats. Lua 5.5 continues this. The `type()` function returns `"number"` for both, but `math.type()` distinguishes them.
+
+```lua
+describe("numbers", function()
+  it("integers and floats share the 'number' type", function()
+    expect.equal(type(1),   "number")
+    expect.equal(type(1.0), "number")
+  end)
+
+  it("math.type() distinguishes integers from floats", function()
+    expect.equal(math.type(1),   "integer")
+    expect.equal(math.type(1.0), "float")
+  end)
+
+  it("integer division with // always returns an integer", function()
+    expect.equal(math.type(10 // 3), "integer")
+    expect.equal(10 // 3, 3)
+  end)
+
+  it("division with / always returns a float", function()
+    expect.equal(math.type(10 / 2), "float")
+    expect.equal(10 / 2, 5.0)
+  end)
+
+  it("float arithmetic is approximate", function()
+    -- Never test floats with exact equality in real code
+    expect.near(0.1 + 0.2, 0.3, 1e-9)
+  end)
+end)
+```
+
+<Aside type="tip">
+Use `expect.near` (provided by Check Your Lua) when comparing floats. Exact equality on floating-point results is a bug waiting to happen.
+</Aside>
+
+---
+
+## The Full Test File
+
+Here's `variables_test.lua` with all blocks assembled:
+
+```lua
+local cyl = require('checkyourlua')
+local describe, it, expect = cyl.describe, cyl.it, cyl.expect
+
+cyl.parseargs()
+
+-- paste each describe block from above here
+
+cyl.report()
+cyl.exit()
+```
+
+Run with: `lua variables_test.lua`
+
+Expected output:
+```
+[====] type() | 6 passed / 0.000001s
+[====] scope | 2 passed / 0.000001s
+[====] multiple assignment | 4 passed / 0.000001s
+[====] nil | 2 passed / 0.000001s
+[====] truthiness | 4 passed / 0.000001s
+[====] numbers | 5 passed / 0.000001s
+23 passed / 0 skipped / 0 failed / ...s
+```
+
+---
+
+## What You Learned
+
+- `type()` returns one of eight strings; every value in Lua has exactly one type.
+- `local` is mandatory for safe, testable code. Globals are implicit and leak.
+- Multiple assignment lets you express intent clearly and swap without temporaries.
+- `nil` removes table keys and is the zero-value for uninitialized locals.
+- Only `false` and `nil` are falsy — `0` and `""` are truthy.
+- Numbers are either integers or floats internally; use `math.type()` to check.
+
+## Next Steps
+
+Move on to [Strings](/lua-fundamentals/strings/) to explore Lua's rich string library through tests.

@@ -1,0 +1,388 @@
+---
+title: Strings
+description: Master Lua's string type and its standard library through test-driven examples.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## What You'll Learn
+
+- Declare strings with single quotes, double quotes, and long brackets
+- Concatenate with `..` and measure length with `#`
+- Use the `string` library: `find`, `match`, `gsub`, `format`, `sub`, `rep`, `upper`, `lower`
+- Understand why Lua strings are immutable byte arrays
+- Write test-driven specifications for string-processing functions
+
+## Setup
+
+Create `strings_test.lua`:
+
+```lua
+local cyl = require('checkyour')
+local describe, it, expect = cyl.describe, cyl.it, cyl.expect
+
+cyl.parseargs()
+```
+
+---
+
+## String Literals
+
+Lua gives you three ways to write a string literal:
+
+```lua
+describe("string literals", function()
+  it("single and double quotes are interchangeable", function()
+    expect.equal('hello', "hello")
+    expect.equal(type('hello'), "string")
+  end)
+
+  it("long brackets can span multiple lines", function()
+    local poem = [[
+line one
+line two]]
+    expect.contains(poem, "line one")
+    expect.contains(poem, "line two")
+  end)
+
+  it("escape sequences work inside quoted strings", function()
+    expect.equal("tab:\there",   "tab:\there")
+    expect.equal("newline:\n!",  "newline:\n!")
+    expect.equal("quote: \"hi\"", 'quote: "hi"')
+  end)
+end)
+```
+
+<Aside type="tip">
+Long brackets `[[...]]` are ideal for multiline strings, SQL queries, or any text that contains both single and double quotes.
+</Aside>
+
+---
+
+## Concatenation and Length
+
+The `..` operator concatenates strings. `#` returns the byte length.
+
+```lua
+describe("concatenation and length", function()
+  it(".. joins two strings", function()
+    expect.equal("Hello" .. ", " .. "world!", "Hello, world!")
+  end)
+
+  it(".. coerces numbers to strings", function()
+    expect.equal("value: " .. 42, "value: 42")
+  end)
+
+  it("# returns byte length, not character count", function()
+    expect.equal(#"Lua",    3)
+    expect.equal(#"",       0)
+    expect.equal(#"hello!", 6)
+  end)
+
+  it("repeated concatenation produces the right result", function()
+    local parts = {}
+    for i = 1, 5 do
+      parts[i] = tostring(i)
+    end
+    expect.equal(table.concat(parts, "-"), "1-2-3-4-5")
+  end)
+end)
+```
+
+<Aside type="caution">
+Avoid using `..` inside a loop to build large strings — each call allocates a new string. Use `table.concat` on a parts table instead, as shown above.
+</Aside>
+
+---
+
+## String Methods
+
+Lua strings are objects with methods. You can call them as `s:method()` or `string.method(s)` — they're equivalent.
+
+### Case Conversion
+
+```lua
+describe("case conversion", function()
+  it("upper() uppercases ASCII", function()
+    expect.equal(("hello"):upper(), "HELLO")
+    expect.equal(string.upper("Lua"), "LUA")
+  end)
+
+  it("lower() lowercases ASCII", function()
+    expect.equal(("WORLD"):lower(), "world")
+  end)
+
+  it("case conversion does not mutate the original", function()
+    local s = "Lua"
+    local _ = s:upper()
+    expect.equal(s, "Lua")   -- strings are immutable
+  end)
+end)
+```
+
+### Substrings
+
+`string.sub(s, i, j)` returns characters from index `i` to `j` (1-based, inclusive). Negative indices count from the end.
+
+```lua
+describe("sub", function()
+  it("extracts a substring by 1-based indices", function()
+    local s = "Hello, Lua!"
+    expect.equal(s:sub(1, 5),  "Hello")
+    expect.equal(s:sub(8, 10), "Lua")
+  end)
+
+  it("negative indices count from the end", function()
+    expect.equal(("abcdef"):sub(-3),    "def")   -- last 3 chars
+    expect.equal(("abcdef"):sub(-3, -2), "de")
+  end)
+
+  it("out-of-range indices are clamped", function()
+    expect.equal(("abc"):sub(1, 100), "abc")
+    expect.equal(("abc"):sub(5),      "")    -- past the end → empty
+  end)
+end)
+```
+
+### Repetition
+
+```lua
+describe("rep", function()
+  it("repeats a string n times", function()
+    expect.equal(("ab"):rep(3), "ababab")
+    expect.equal(("ha"):rep(0), "")
+  end)
+
+  it("supports a separator argument (Lua 5.2+)", function()
+    expect.equal(("na"):rep(4, "-"), "na-na-na-na")
+  end)
+end)
+```
+
+---
+
+## Finding and Matching
+
+Lua's pattern language is a lightweight alternative to full PCRE regex. The key functions are `string.find`, `string.match`, `string.gmatch`, and `string.gsub`.
+
+### `string.find`
+
+Returns the start and end positions of the first match, or `nil`.
+
+```lua
+describe("string.find", function()
+  it("returns start and end positions of a match", function()
+    local s, e = ("hello world"):find("world")
+    expect.equal(s, 7)
+    expect.equal(e, 11)
+  end)
+
+  it("returns nil when there is no match", function()
+    local result = ("hello"):find("xyz")
+    expect.equal(type(result), "nil")
+  end)
+
+  it("plain=true treats the pattern as a literal string", function()
+    -- Without plain=true, '.' is a wildcard
+    local s = ("1.2.3"):find(".", 1, true)
+    expect.equal(s, 2)
+  end)
+end)
+```
+
+### `string.match`
+
+Returns the captured text (or the whole match if no captures are defined).
+
+```lua
+describe("string.match", function()
+  it("returns the matched substring", function()
+    expect.equal(("2024-05-17"):match("%d+"), "2024")
+  end)
+
+  it("returns nil on no match", function()
+    expect.equal(type(("abc"):match("%d+")), "nil")
+  end)
+
+  it("captures with () return multiple values", function()
+    local year, month, day = ("2024-05-17"):match("(%d+)-(%d+)-(%d+)")
+    expect.equal(year,  "2024")
+    expect.equal(month, "05")
+    expect.equal(day,   "17")
+  end)
+end)
+```
+
+### `string.gmatch`
+
+Iterates over all matches. Useful for tokenizing.
+
+```lua
+describe("string.gmatch", function()
+  it("iterates over all matches", function()
+    local words = {}
+    for w in ("one two three"):gmatch("%a+") do
+      table.insert(words, w)
+    end
+    expect.equal(words, {"one", "two", "three"})
+  end)
+
+  it("can extract key=value pairs", function()
+    local pairs_found = {}
+    for k, v in ("a=1, b=2, c=3"):gmatch("(%a+)=(%d+)") do
+      pairs_found[k] = tonumber(v)
+    end
+    expect.equal(pairs_found.a, 1)
+    expect.equal(pairs_found.b, 2)
+    expect.equal(pairs_found.c, 3)
+  end)
+end)
+```
+
+### `string.gsub`
+
+Global substitution. Returns a new string and a count of replacements.
+
+```lua
+describe("string.gsub", function()
+  it("replaces all occurrences by default", function()
+    local result, count = ("banana"):gsub("a", "o")
+    expect.equal(result, "bonono")
+    expect.equal(count,  3)
+  end)
+
+  it("limits replacements with the third argument", function()
+    local result = ("aaa"):gsub("a", "b", 2)
+    expect.equal(result, "bba")
+  end)
+
+  it("can use a function as the replacement", function()
+    local result = ("hello world"):gsub("%a+", string.upper)
+    expect.equal(result, "HELLO WORLD")
+  end)
+
+  it("can use a table as the replacement map", function()
+    local t = { name = "Lua", version = "5.5" }
+    local template = "Welcome to $name $version"
+    local result = template:gsub("%$(%a+)", t)
+    expect.equal(result, "Welcome to Lua 5.5")
+  end)
+end)
+```
+
+---
+
+## `string.format`
+
+Lua's `string.format` works like `printf` in C.
+
+```lua
+describe("string.format", function()
+  it("formats integers and floats", function()
+    expect.equal(string.format("%d",   42),    "42")
+    expect.equal(string.format("%.2f", 3.14159), "3.14")
+  end)
+
+  it("pads with spaces or zeros", function()
+    expect.equal(string.format("%5d",  42),  "   42")
+    expect.equal(string.format("%05d", 42),  "00042")
+    expect.equal(string.format("%-5d|", 42), "42   |")
+  end)
+
+  it("formats strings with %s", function()
+    expect.equal(string.format("Hello, %s!", "Lua"), "Hello, Lua!")
+  end)
+
+  it("formats hex with %x", function()
+    expect.equal(string.format("%x", 255), "ff")
+    expect.equal(string.format("%X", 255), "FF")
+  end)
+end)
+```
+
+---
+
+## Strings Are Immutable Byte Arrays
+
+Lua strings are interned and immutable. Every "modification" creates a new string.
+
+```lua
+describe("immutability", function()
+  it("string operations return new strings", function()
+    local original = "hello"
+    local upper    = original:upper()
+    expect.equal(original, "hello")   -- unchanged
+    expect.equal(upper,    "HELLO")
+  end)
+
+  it("the same string literal is the same object", function()
+    -- Lua interns strings; identity test with rawequal
+    local a = "intern me"
+    local b = "intern me"
+    expect.truthy(rawequal(a, b))
+  end)
+end)
+```
+
+---
+
+## Building a String Utility: TDD Style
+
+Let's write a small utility function using the full TDD cycle. The goal: a `trim` function that strips leading and trailing whitespace.
+
+**Red** — write the test first:
+
+```lua
+describe("trim", function()
+  it("removes leading and trailing spaces", function()
+    expect.equal(trim("  hello  "), "hello")
+  end)
+
+  it("handles strings with no whitespace", function()
+    expect.equal(trim("hello"), "hello")
+  end)
+
+  it("handles an all-whitespace string", function()
+    expect.equal(trim("   "), "")
+  end)
+end)
+```
+
+Running now gives `attempt to call a nil value (global 'trim')`. Good — that's red.
+
+**Green** — implement the minimum code:
+
+```lua
+function trim(s)
+  return s:match("^%s*(.-)%s*$")
+end
+```
+
+**Refactor** — make it a proper module function:
+
+```lua
+local M = {}
+
+function M.trim(s)
+  return s:match("^%s*(.-)%s*$")
+end
+
+return M
+```
+
+Update the test to `local trim = require('stringutils').trim`. Tests still green. Cycle complete.
+
+---
+
+## What You Learned
+
+- Lua has three string literal forms; long brackets handle multiline content cleanly.
+- `..` concatenates; `#` measures byte length (not Unicode character count).
+- Strings are immutable — all operations return new strings.
+- The `string` library covers find, match, gmatch, gsub, sub, rep, format, upper, lower.
+- Lua patterns are not PCRE; they're a lighter alternative worth learning on their own terms.
+- `table.concat` is the right tool for building strings from many pieces.
+
+## Next Steps
+
+Continue to [Numbers and Math](/lua-fundamentals/numbers-and-math/) to explore Lua's numeric tower and `math` library through tests.
