@@ -25,25 +25,24 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Why Learn Lua with TDD?
 
-Lua is a beautifully minimal language, making it highly extensible but also easy to misuse. This project bridges that gap. 
+Lua is a beautifully minimal language, making it highly extensible but also incredibly easy to misuse. Because the language gives you immense freedom without rigid guardrails, it is easy to accidentally write messy, unmaintainable code. This project bridges that gap. 
 
-By writing tests before you write implementation code, you build an understanding of Lua’s syntax while internalizing important software engineering practices.
-
+By writing tests before you write implementation code, you build an understanding of Lua’s syntax while internalizing important software engineering practices. You won't just learn how to write Lua; you will learn how to design robust, production-ready Lua modules that stand up to real-world complexity.
 
 ## Featured Concepts
 
 <CardGrid stagger>
     <Card title="Check Your Lua" icon="setting">
-        Write clear, expressive assertions using **Check Your Lua**, a small unit testing library developed for this book.
+        Write clear, expressive assertions using **Check Your Lua**, a small, custom unit testing library developed specifically for this book to keep your feedback loops fast and your dependencies minimal.
     </Card>
     <Card title="LuaUnit Ecosystem" icon="document">
-        Learn to navigate classic xUnit testing patterns with **LuaUnit**, the most widely utilized testing framework in the Lua community.
+        Learn to navigate classic xUnit testing patterns with **LuaUnit**, the most widely utilized testing framework in the Lua community, preparing you for real-world codebases.
     </Card>
     <Card title="Red, Green, Refactor" icon="pencil">
-        Internalize the core TDD cycle. Write a failing test, write the minimal code to pass, and refactor with total safety.
+        Internalize the core TDD cycle. Write a failing test to define your intent, write the minimal code required to make it pass, and confidently refactor your design with total safety.
     </Card>
     <Card title="Core Language Mechanics" icon="open-book">
-        Demystify Lua’s distinct features: tables, metatables, closures, lexical scoping, and coroutines. Done entirely through functional test suites.
+        Demystify Lua’s distinct features—tables, metatables, closures, lexical scoping, and coroutines—entirely through functional, hands-on test suites.
     </Card>
 </CardGrid>
 
@@ -51,41 +50,49 @@ By writing tests before you write implementation code, you build an understandin
 
 ## The Philosophy Behind This Guide
 
+While I was learning Lua, the only resource I felt I needed was the [official Lua manual.](https://lua.org/manual/5.5/) I highly recommend reading it if you plan on writing Lua. It will be more effective at teaching you the fundamentals than any paid resource or video. The manual tells you exactly *what* the language tools are.
+
+However, knowing what a tool does is different from knowing *how to build* with it safely. Since Lua was created, a lot has changed in software development, including the way we write code. TDD and BDD have become the norm for many software teams, yet Lua doesn't seem to get the same treatment as languages like Go or Python when it comes to writing unit tests. This guide aims to change that by treating Lua testing as a first-class citizen.
+
 Traditional learning resources usually fail software teams in one of two ways: 
 
-- They demand dense textbook reading
-- They rely on isolated logic puzzles (katas) that don't scale
+- **The Theory Trap:** They demand dense, passive textbook reading before you ever run a line of code.
+- **The Toy Trap:** They rely on isolated logic puzzles (katas) that feel satisfying but don't scale to complex, real-world architectures.
 
-### A Functional Approach
-The most effective way to master a technical language is through interactive mechanics. 
-
-This guide approaches programming where you learn by doing. 
+This guide approaches programming where you learn by doing, mimicking the actual daily workflow of a software engineer. 
 
 You will:
-*   **Isolate concepts** into small, digestible milestones.
-*   **Verify assumptions** immediately inside an isolated test environment.
-*   **Document features** implicitly through the code assertions you write.
+*   **Isolate concepts** into small, digestible milestones so you never feel overwhelmed by the language's unique mechanics.
+*   **Verify assumptions** immediately inside an isolated test environment, giving you instant feedback on how Lua handles data under the hood.
+*   **Document features** implicitly through the code assertions you write, leaving you with a self-documenting codebase.
 
-Lua code can become terse with its metatable approach and the limited amount of [data types.](https://en.wikipedia.org/wiki/Data_type) By writing tests first, you ensure your code is correct.
+Lua code can easily become terse and hard to reason about, especially with its prototypes via the metatable approach and the inherent lack of [typed data.](https://en.wikipedia.org/wiki/Data_type) By writing tests first, you eliminate the guesswork and ensure your code is correct, readable, and resilient by design.
 
 ---
 
 ## Who This Is For
 
-*   **Lua Newcomers:** Developers looking to learn the language mechanics through a structured, highly disciplined approach.
-*   **Experienced Devs:** Programmers who know basic Lua syntax but want to transition to a professional, test-first design workflow.
+*   **Lua Newcomers:** Developers looking to learn the language mechanics from scratch through a structured, highly disciplined approach.
+*   **Experienced Devs:** Programmers who already know basic Lua syntax or use it for scripting (e.g., in Neovim, Luau, or game engines) but want to transition to a professional, test-first design workflow.
+*   **TDD Practitioners:** Software engineers who love test-driven development in other languages and want to see how those same patterns elegantly map onto Lua's minimal footprint.
 
 ## Prerequisites
 
-*   A local development machine with [Lua](https://www.lua.org/) (5.5+) installed.
-*   A terminal environment and your preferred text editor (VS Code, Neovim, etc).
-*   Basic programming foundations (loops, conditional blocks, functions, and variables).
+To get the most out of this guide, you should comfortably meet the following requirements:
+
+*   A local development machine with [Lua](https://www.lua.org/) (5.4 or 5.5+) installed.
+*   A terminal environment (bash, zsh, or powershell) and your preferred text editor (VS Code, Neovim, Helix, etc.).
+*   Basic programming foundations—you should already understand loops, conditional blocks, functions, and variables in at least one language.
 
 ---
 
 ## About the Author & Publisher
 
-This guide is developed for free by [Nick Stambaugh](https://nickstambaugh.dev) and published by [Luniv Technology](https://luniv.tech), an independent software engineering studio. 
+I have multiple years experience transitioning software teams and codebases to Test Driven Development, mainly in C#. 
+
+For the last two years, I have been enjoying writing Lua instead of Python for many personal projects. Along the way, I developed [Check Your Lua](https://github.com/Sieep-Coding/Check-Your-Lua), one of the libaries used in this book to teach you TDD. This library helps me develop clean Lua code with minimal bugs. I feel much more comfortable selling code with full coverage.
+
+This guide is developed for free by me, [Nick Stambaugh.](https://nickstambaugh.dev) It is published by [Luniv Technology](https://luniv.tech), an independent software engineering studio. 
 
 If you find this resource valuable, consider contributing to the project:
 
