@@ -25,24 +25,24 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Why Learn Lua with TDD?
 
-Lua is a beautifully minimal language, making it highly extensible but also incredibly easy to misuse. Because the language gives you immense freedom without rigid guardrails, it is easy to accidentally write messy, unmaintainable code. This project bridges that gap. 
+Lua is a beautifully minimal language, making it highly extensible but also incredibly easy to misuse.
 
-By writing tests before you write implementation code, you build an understanding of Lua’s syntax while internalizing important software engineering practices. You won't just learn how to write Lua; you will learn how to design robust, production-ready Lua modules that stand up to real-world complexity.
+By writing unit tests first, you will learn how to design production ready Lua modules that stand up to real-world complexity.
 
 ## Featured Concepts
 
 <CardGrid stagger>
     <Card title="Check Your Lua" icon="setting">
-        Write clear, expressive assertions using **Check Your Lua**, a small, custom unit testing library developed specifically for this book to keep your feedback loops fast and your dependencies minimal.
+        Write clear, expressive assertions using **Check Your Lua**, a small, custom unit testing library developed specifically for this book.
     </Card>
     <Card title="LuaUnit Ecosystem" icon="document">
-        Learn to navigate classic xUnit testing patterns with **LuaUnit**, the most widely utilized testing framework in the Lua community, preparing you for real-world codebases.
+        Learn to navigate classic xUnit testing patterns with **LuaUnit**, the most widely utilized testing framework in the Lua community.
     </Card>
     <Card title="Red, Green, Refactor" icon="pencil">
-        Internalize the core TDD cycle. Write a failing test to define your intent, write the minimal code required to make it pass, and confidently refactor your design with total safety.
+        Write a failing test to define your intent, write the minimal code required to make it pass, and confidently refactor your design with total safety.
     </Card>
     <Card title="Core Language Mechanics" icon="open-book">
-        Demystify Lua’s distinct features—tables, metatables, closures, lexical scoping, and coroutines—entirely through functional, hands-on test suites.
+        Demystify Lua’s distinct features: tables, metatables, closures, lexical scoping, and coroutines.
     </Card>
 </CardGrid>
 
@@ -52,21 +52,23 @@ By writing tests before you write implementation code, you build an understandin
 
 While I was learning Lua, the only resource I felt I needed was the [official Lua manual.](https://lua.org/manual/5.5/) I highly recommend reading it if you plan on writing Lua. It will be more effective at teaching you the fundamentals than any paid resource or video. The manual tells you exactly *what* the language tools are.
 
-However, knowing what a tool does is different from knowing *how to build* with it safely. Since Lua was created, a lot has changed in software development, including the way we write code. TDD and BDD have become the norm for many software teams, yet Lua doesn't seem to get the same treatment as languages like Go or Python when it comes to writing unit tests. This guide aims to change that by treating Lua testing as a first-class citizen.
+However, knowing what a tool does is different from knowing *how to build* with it safely. 
+
+Since Lua was created, a lot has changed in software development, including the way we write code. TDD and BDD have become the norm for many software teams, yet Lua doesn't seem to get the same treatment as languages like Go or Python when it comes to writing unit tests. This guide aims to change that by treating Lua testing as a first-class citizen.
 
 Traditional learning resources usually fail software teams in one of two ways: 
 
-- **The Theory Trap:** They demand dense, passive textbook reading before you ever run a line of code.
-- **The Toy Trap:** They rely on isolated logic puzzles (katas) that feel satisfying but don't scale to complex, real-world architectures.
+- **The Theory Trap:** They demand dense textbook reading before you ever run a line of code.
+- **The Toy Trap:** They rely on isolated logic puzzles (katas) that feel satisfying to solve. To me, katas lack the *structure* of real software projects and fail to show you the true problem-solving techniques professionals use.
 
-This guide approaches programming where you learn by doing, mimicking the actual daily workflow of a software engineer. 
+This guide approaches programming where you mimick the actual daily workflow of a software engineer. 
 
 You will:
 *   **Isolate concepts** into small, digestible milestones so you never feel overwhelmed by the language's unique mechanics.
 *   **Verify assumptions** immediately inside an isolated test environment, giving you instant feedback on how Lua handles data under the hood.
 *   **Document features** implicitly through the code assertions you write, leaving you with a self-documenting codebase.
 
-Lua code can easily become terse and hard to reason about, especially with its prototypes via the metatable approach and the inherent lack of [typed data.](https://en.wikipedia.org/wiki/Data_type) By writing tests first, you eliminate the guesswork and ensure your code is correct, readable, and resilient by design.
+Lua code can easily become hard to reason about, especially with its prototypes via the metatable approach and the inherent lack of [typed data.](https://en.wikipedia.org/wiki/Data_type) By writing tests first, you eliminate the guesswork and ensure your code is correct, readable, and resilient.
 
 ---
 
